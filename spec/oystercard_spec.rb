@@ -17,34 +17,41 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct(amount)' do
-    it 'deducts an amount from the balance' do
-      card = Oystercard.new(10)
-      card.deduct(5)
-      expect(card.balance).to eq(5)
-    end
-  end
-
   describe '#touch_in' do
     it 'Changes in_journey to true' do
+    subject.top_up(Oystercard::MINIMUM_AMOUNT)
     subject.touch_in
     expect(subject.in_journey?).to eq true
     end
 
     it 'Prevents touching in when in journey' do
+      subject.top_up(Oystercard::MINIMUM_AMOUNT)
       subject.touch_in
       expect { subject.touch_in }.to raise_error("Already touched in")
     end
+
+    it 'throws an error if balance is less than minimum amount' do
+      expect { subject.touch_in }.to raise_error 'Insufficient funds'
+    end 
+      
   end
 
   describe '#touch_out' do
     it 'Changes in_journey to false' do
-      subject.touch_in.touch_out
+      subject.top_up(Oystercard::MINIMUM_AMOUNT)
+      subject.touch_in
+      subject.touch_out
       expect(subject.in_journey?).to eq false
     end
 
     it 'Prevents touching out when not in journey' do
       expect { subject.touch_out }.to raise_error("Already touched out")
+    end
+
+    it 'Deducts balance by the minimum amount' do
+      subject.top_up(Oystercard::MINIMUM_AMOUNT)
+      subject.touch_in
+      expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_AMOUNT)
     end
   end
 end

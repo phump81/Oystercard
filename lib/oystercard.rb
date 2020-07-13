@@ -3,6 +3,7 @@ class Oystercard
   attr_accessor :balance
 
   BALANCE_LIMIT = 90
+  MINIMUM_AMOUNT = 1
   def initialize(balance = 0)
     @balance = balance
     @in_journey = false
@@ -13,16 +14,12 @@ class Oystercard
     @balance += amount
   end
 
-  def deduct(amount)
-    @balance -= amount
-  end
-
   def touch_in
 
     fail "Already touched in" if in_journey?
+    fail "Insufficient funds" if @balance < MINIMUM_AMOUNT 
 
     @in_journey = true
-    self
   end
 
   def in_journey?
@@ -33,8 +30,14 @@ class Oystercard
 
     fail "Already touched out" unless in_journey?
 
+    deduct(MINIMUM_AMOUNT)
     @in_journey = false
-    self
+  end
+
+  private
+  
+  def deduct(amount)
+    @balance -= amount
   end
 
 

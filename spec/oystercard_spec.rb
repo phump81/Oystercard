@@ -2,6 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 
+  let(:station) { double("Station") }
+
   it 'Adds balance of zero to a new card' do
     expect(subject.balance).to eq(0)
   end
@@ -32,8 +34,13 @@ describe Oystercard do
 
     it 'throws an error if balance is less than minimum amount' do
       expect { subject.touch_in }.to raise_error 'Insufficient funds'
-    end 
-      
+    end
+
+    it 'Remembers the entry station' do
+      subject.top_up(Oystercard::MINIMUM_AMOUNT)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq(station)
+    end
   end
 
   describe '#touch_out' do

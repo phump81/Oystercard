@@ -1,6 +1,6 @@
 class Oystercard
 
-  attr_accessor :balance, :entry_station 
+  attr_accessor :balance, :entry_station
 
   BALANCE_LIMIT = 90
   MINIMUM_AMOUNT = 1
@@ -20,19 +20,18 @@ class Oystercard
     fail "Insufficient funds" if @balance < MINIMUM_AMOUNT
 
     @entry_station = station
-    @in_journey = true
   end
 
   def in_journey?
-    @in_journey
+    !!@entry_station 
   end
 
   def touch_out
 
     fail "Already touched out" unless in_journey?
 
+    @entry_station = nil
     deduct(MINIMUM_AMOUNT)
-    @in_journey = false
   end
 
   private

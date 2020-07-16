@@ -4,9 +4,10 @@ class Oystercard
 
   BALANCE_LIMIT = 90
   MINIMUM_AMOUNT = 1
-  def initialize(balance = 0)
+  def initialize(balance = 0, current_journey = Journey.new)
     @balance = balance
     @journeys = []
+    @current_journey = current_journey
   end
 
   def top_up(amount)
@@ -16,26 +17,28 @@ class Oystercard
 
   def touch_in(entry_station)
 
-    fail "Already touched in" if in_journey?
     fail "Insufficient funds" if @balance < MINIMUM_AMOUNT
+
+    deduct(@current_journey.fare) if in_journey?
+    fail "Already touched in!" if in_journey?
 
     @current_journey = Journey.new(entry_station)
   end
 
   def in_journey?
-    !(@current_journey.complete?)
+    !!@current_journey.entry_station && !@current_journey.complete?
   end
 
   def touch_out(exit_station)
 
-    fail "Already touched out" unless in_journey?
+    deduct(@current_journey.fare) unless in_journey?
+    fail "Didn't touch in!" unless in_journey?
 
-    @current_journey.exit_station = exit_station
+    @current_journey.finish(exit_station)
 
-    journey =  { :entry_station => @current_journey.entry_station, :exit_station => @current_journey.exit_station }
-    @journeys << journey
+    deduct(@current_journey.fare)
 
-    deduct(MINIMUM_AMOUNT)
+    @journeys << { :entry_station => @current_journey.entry_station, :exit_station => @current_journey.exit_station }
   end
 
   private

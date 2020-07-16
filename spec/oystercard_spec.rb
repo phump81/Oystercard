@@ -28,12 +28,6 @@ describe Oystercard do
     expect(subject.in_journey?).to eq true
     end
 
-    it 'Prevents touching in when in journey' do
-      subject.top_up(Oystercard::MINIMUM_AMOUNT)
-      subject.touch_in(entry_station)
-      expect { subject.touch_in(entry_station) }.to raise_error("Already touched in")
-    end
-
     it 'throws an error if balance is less than minimum amount' do
       expect { subject.touch_in(entry_station) }.to raise_error 'Insufficient funds'
     end
@@ -45,10 +39,6 @@ describe Oystercard do
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
       expect(subject.in_journey?).to eq false
-    end
-
-    it 'Prevents touching out when not in journey' do
-      expect { subject.touch_out(exit_station) }.to raise_error("Already touched out")
     end
 
     it 'Deducts balance by the minimum amount' do

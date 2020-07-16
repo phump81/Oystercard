@@ -37,12 +37,6 @@ describe Oystercard do
     it 'throws an error if balance is less than minimum amount' do
       expect { subject.touch_in(entry_station) }.to raise_error 'Insufficient funds'
     end
-
-    it 'Remembers the entry station' do
-      subject.top_up(Oystercard::MINIMUM_AMOUNT)
-      subject.touch_in(entry_station)
-      expect(subject.entry_station).to eq(entry_station)
-    end
   end
 
   describe '#touch_out' do
@@ -61,20 +55,6 @@ describe Oystercard do
       subject.top_up(Oystercard::MINIMUM_AMOUNT)
       subject.touch_in(entry_station)
       expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_AMOUNT)
-    end
-
-    it 'Sets entry station to nil' do
-      subject.top_up(Oystercard::MINIMUM_AMOUNT)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.entry_station).to eq(nil)
-    end
-
-    it 'stores exit station' do
-      subject.top_up(Oystercard::MINIMUM_AMOUNT)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject.exit_station).to eq(exit_station)
     end
   end
 
